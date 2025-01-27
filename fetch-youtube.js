@@ -12,7 +12,7 @@ const { YoutubeTranscript } = require("youtube-transcript");
         console.log("Video Metadata:", metadata);
 
         // Get transcript
-        const transcript = await YoutubeTranscript.fetchTranscript("TVUibwoVXZc");
+        const transcript = await YoutubeTranscript.fetchTranscript(url);
 
         // Convert transcript to text
         const transcriptText = transcript.map((entry) => entry.text).join(" ");
