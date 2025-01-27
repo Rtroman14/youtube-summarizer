@@ -17,12 +17,18 @@ export async function getVideoDetails(url) {
         const transcriptText = transcript.map((entry) => entry.text).join(" ");
 
         return {
-            title: metadata.title,
-            thumbnailUrl: metadata.thumbnail_url,
-            transcript: transcriptText,
+            success: true,
+            data: {
+                title: metadata.title,
+                thumbnailUrl: metadata.thumbnail_url,
+                transcript: transcriptText,
+            },
         };
     } catch (error) {
         console.error("Error fetching video details:", error);
-        throw error;
+        return {
+            success: false,
+            message: error.message,
+        };
     }
 }

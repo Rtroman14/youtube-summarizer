@@ -9,12 +9,16 @@ import { getVideoDetails } from "./actions";
 import { useAutoScroll } from "@/components/ui/use-auto-scroll";
 import { ArrowDown } from "lucide-react";
 import { PaperAirplaneIcon, LinkIcon } from "@heroicons/react/24/solid";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
 import { ChatMessage } from "@/components/ui/ChatMessage";
 
 export default function YouTubeSummarizer() {
+    const [url, setUrl] = useState("");
     const [videoInfo, setVideoInfo] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
+    const { toast } = useToast();
 
     const {
         messages,
@@ -35,34 +39,68 @@ export default function YouTubeSummarizer() {
         content: messages,
     });
 
+    // Add this validation schema
+    const youtubeUrlSchema = z.string().refine((url) => {
+        const patterns = [
+            /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})$/,
+            /^(https?:\/\/)?(www\.)?youtube\.com\/live\/([a-zA-Z0-9_-]{11})$/,
+        ];
+        return patterns.some((pattern) => pattern.test(url));
+    }, "Please enter a valid YouTube URL");
+
     const handleFetchVideoSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            // Add validation
+            const result = youtubeUrlSchema.safeParse(url);
+            if (!result.success) {
+                toast({
+                    variant: "destructive",
+                    title: "Invalid YouTube URL",
+                    description: "Please enter a valid YouTube video URL",
+                });
+                return;
+            }
+
+            setMessages([]);
+            setVideoInfo(null);
+
             setIsFetching(true);
 
-            // Use the URL from the input field
-            const videoUrl = input;
+            // Use the URL state instead of input
+            const videoUrl = url;
 
             // Fetch video details using server action
             const details = await getVideoDetails(videoUrl);
 
+            console.log(`details -->`, details);
+
+            if (!details.success) {
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: details.message,
+                });
+
+                return;
+            }
+
             // Update video info state
             setVideoInfo({
-                title: details.title,
-                thumbnailUrl: details.thumbnailUrl,
+                title: details.data.title,
+                thumbnailUrl: details.data.thumbnailUrl,
                 url: videoUrl,
             });
-
-            setMessages([]);
 
             // Send transcript to AI for summarization
             append({
                 role: "user",
-                content: `Provide a summary of the transcript for the YouTube video titled "${details.title}": """${details.transcript}"""`,
+                content: `Provide a summary of the transcript for the YouTube video titled "${details.data.title}": """${details.data.transcript}"""`,
             });
 
-            setInput("");
+            // Clear the URL input after successful fetch
+            setUrl("");
         } catch (error) {
             console.error("Error:", error);
             // You might want to show an error message to the user here
@@ -80,8 +118,8 @@ export default function YouTubeSummarizer() {
                 <div className="flex gap-2">
                     <Input
                         type="text"
-                        value={input}
-                        onChange={handleInputChange}
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
                         placeholder="Enter YouTube URL"
                         className="flex-grow"
                     />
