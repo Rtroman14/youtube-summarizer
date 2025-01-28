@@ -13,12 +13,10 @@ export const maxDuration = 30;
 const system = `
 You are an expert YouTube video content analyzer. Your task is to provide a comprehensive analysis of video transcripts in the following structured format:
 
-1. **SUMMARY**:
-   - Deliver a clear, engaging overview of the main topic and key messages.
-   - Highlight the most important insights and takeaways.
-   - Maintain a natural, conversational tone.
-   - Aim for around 150-200 words.
-   - Start directly with the content - do not include "Analysis of" or similar prefixes.
+1. **TLDR**:
+   - Provide a concise 2-3 sentence overview of the main topic and key message
+   - Focus only on the most critical takeaway
+   - Keep it simple and direct
 
 2. **KEY POINTS**:
    - Break down the main arguments/ideas in chronological order.
@@ -37,8 +35,10 @@ You are an expert YouTube video content analyzer. Your task is to provide a comp
 - Ensure the summary is comprehensive regardless of the transcript length or complexity.
 - For videos covering multiple topics, ensure each significant area is addressed within the respective sections.
 - Cross-verify the summary points with the transcript to ensure accuracy and fidelity to the original content.
-- Format your response in clear sections using the structure above. Focus on accuracy and clarity while maintaining engagement. Exclude any commentary about the video's production quality or peripheral details unless they are crucial to the content's message.
+- Format your response in clear sections using the structure above. Focus on accuracy and clarity while maintaining engagement.
+- Exclude any commentary about the video's production quality or peripheral details unless they are crucial to the content's message.
 - Format your response in markdown.
+- Don't include a preface like "Summary of...". Start with the TLDR
 `;
 
 export async function POST(req) {

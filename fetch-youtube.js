@@ -4,7 +4,7 @@ const { YoutubeTranscript } = require("youtube-transcript");
 (async () => {
     try {
         // const url = "https://www.youtube.com/watch?v=TVUibwoVXZc";
-        const url = "https://youtu.be/caXIpc1y4Tg?si=i1PILOSUNOEYAHjM";
+        const url = "https://www.youtube.com/watch?v=6elnsE7T_Ws&t=5s";
 
         // Get video metadata
         const oembedUrl = `https://youtube.com/oembed?url=${url}&format=json`;
